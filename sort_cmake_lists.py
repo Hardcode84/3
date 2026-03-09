@@ -21,17 +21,22 @@ from pathlib import Path
 _KEYWORDS: set[str] = {
     "ADDITIONAL_HEADER_DIRS",
     "ADD_TO_PARENT",
+    "CACHE",
     "COMMON_CAPI_LINK_LIBS",
     "DECLARED_SOURCES",
     "DEPENDS",
     "DIALECT_NAME",
     "EMBED_CAPI_LINK_LIBS",
     "EXCLUDE_FROM_LIBMLIR",
+    "IMPORTED",
     "INSTALL_COMPONENT",
     "INSTALL_DESTINATION",
     "INSTALL_PREFIX",
+    "INTERFACE",
     "LINK_LIBS",
+    "MODULE",
     "MODULE_NAME",
+    "OBJECT",
     "OUTPUT_DIRECTORY",
     "PRIVATE",
     "PRIVATE_LINK_LIBS",
@@ -39,7 +44,9 @@ _KEYWORDS: set[str] = {
     "RELATIVE_INSTALL_ROOT",
     "ROOT_DIR",
     "ROOT_PREFIX",
+    "SHARED",
     "SOURCES",
+    "STATIC",
 }
 
 # Commands whose argument lists we consider sortable.
@@ -169,6 +176,13 @@ def process_file(path: Path) -> bool:
             cmd_lines.append(lines[i])
             depth += lines[i].count("(") - lines[i].count(")")
             i += 1
+
+        # Skip commands that contain bracket arguments ([=[ ... ]=]) --
+        # these are multi-line string literals (e.g. embedded C code).
+        cmd_text = "".join(cmd_lines)
+        if "[=[" in cmd_text or "]=]" in cmd_text:
+            out.extend(cmd_lines)
+            continue
 
         # First line is the command header (name + first arg like target
         # name).  Last line typically just has ")".  Sort the body in

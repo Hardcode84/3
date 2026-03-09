@@ -238,3 +238,93 @@ def test_comments_break_blocks(tmp_path):
         )
     """
     )
+
+
+def test_cache_keyword_preserves_position(tmp_path):
+    """CACHE STRING should stay in place, not get sorted into the value list."""
+    changed, result = _run(
+        tmp_path,
+        """\
+        set(LLVM_DISTRIBUTIONS
+          Toolchain
+          Development
+          CACHE STRING "")
+        """,
+    )
+    assert changed
+    assert result == textwrap.dedent(
+        """\
+        set(LLVM_DISTRIBUTIONS
+          Development
+          Toolchain
+          CACHE STRING "")
+    """
+    )
+
+
+def test_interface_keyword_is_separator(tmp_path):
+    """INTERFACE should act as a block separator, libs after it get sorted."""
+    changed, result = _run(
+        tmp_path,
+        """\
+        target_link_libraries(
+          my_target
+          INTERFACE
+            iree::foo
+            iree::bar
+        )
+        """,
+    )
+    assert changed
+    assert result == textwrap.dedent(
+        """\
+        target_link_libraries(
+          my_target
+          INTERFACE
+            iree::bar
+            iree::foo
+        )
+    """
+    )
+
+
+def test_bracket_argument_skipped(tmp_path):
+    """set() with bracket arguments should not be sorted."""
+    content = textwrap.dedent(
+        """\
+        set(_TEMPLATE [=[
+        static void Foo() {
+          Bar();
+          Alpha();
+        }
+        ]=])
+    """
+    )
+    changed, _ = _run(tmp_path, content)
+    assert not changed
+
+
+def test_target_link_libraries_private(tmp_path):
+    """target_link_libraries with PRIVATE sorts only after the keyword."""
+    changed, result = _run(
+        tmp_path,
+        """\
+        target_link_libraries(my_target
+          PRIVATE
+          iree_runtime
+          iree_hal
+          iree_base
+        )
+        """,
+    )
+    assert changed
+    assert result == textwrap.dedent(
+        """\
+        target_link_libraries(my_target
+          PRIVATE
+          iree_base
+          iree_hal
+          iree_runtime
+        )
+    """
+    )
