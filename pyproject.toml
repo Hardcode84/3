@@ -1,0 +1,14 @@
+# SPDX-License-Identifier: Apache-2.0
+[project]
+name = "sort-cmake-lists"
+version = "0.1.0"
+description = "Pre-commit hook to sort file/library lists in CMake files."
+license = "Apache-2.0"
+requires-python = ">=3.9"
+
+[project.scripts]
+sort-cmake-lists = "sort_cmake_lists:main"
+
+[build-system]
+requires = ["setuptools>=64"]
+build-backend = "setuptools.backends._legacy:_Backend"
