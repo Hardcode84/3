@@ -1,0 +1,6 @@
+-   id: sort-cmake-lists
+    name: Sort CMake file/library lists
+    entry: sort_cmake_lists.py
+    language: python
+    files: CMakeLists\.txt$|\.cmake$
+    description: Sort argument lists in CMake commands alphabetically.
