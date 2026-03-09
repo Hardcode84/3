@@ -12,3 +12,6 @@ sort-cmake-lists = "sort_cmake_lists:main"
 [build-system]
 requires = ["setuptools>=64"]
 build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+py-modules = ["sort_cmake_lists"]
