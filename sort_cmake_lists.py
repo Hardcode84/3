@@ -106,7 +106,8 @@ def _process_command(body_lines: list[str]) -> list[str]:
         stripped = line.strip()
 
         # Empty lines or closing paren act as block separators.
-        if not stripped or stripped == ")":
+        # Also catch values with a trailing ")" glued on (e.g. "Impl)").
+        if not stripped or stripped.endswith(")"):
             flush()
             result.append(line)
             continue

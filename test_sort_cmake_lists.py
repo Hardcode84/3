@@ -304,6 +304,19 @@ def test_bracket_argument_skipped(tmp_path):
     assert not changed
 
 
+def test_closing_paren_glued_to_value(tmp_path):
+    """Values with ) glued on should not be sorted away from the end."""
+    changed, _ = _run(
+        tmp_path,
+        """\
+        target_link_libraries(${target}
+          iree_compiler_bindings_c_headers
+          iree_compiler_API_Impl)
+        """,
+    )
+    assert not changed
+
+
 def test_target_link_libraries_private(tmp_path):
     """target_link_libraries with PRIVATE sorts only after the keyword."""
     changed, result = _run(
